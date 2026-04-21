@@ -1,0 +1,923 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Talya Nails</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<style>
+:root {
+  --rose:#f4a7b9;--rose-pale:#fce4ec;--rose-mid:#f48fb1;
+  --blanc:#ffffff;--gris-clair:#fdf6f8;--texte:#4a2535;
+  --texte-doux:#8b5a6a;--bordure:#f0c4d0;--nav-h:70px;
+  --admin:#7c3aed;--admin-pale:#f3f0ff;--admin-border:#d8b4fe;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Jost',sans-serif;background:var(--gris-clair);color:var(--texte);min-height:100vh;}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:200;height:var(--nav-h);
+  background:rgba(255,255,255,0.97);backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--bordure);display:flex;align-items:center;
+  padding:0 2rem;justify-content:space-between;gap:0.5rem;}
+.logo{font-family:'Cormorant Garamond',serif;font-size:1.8rem;font-weight:600;text-decoration:none;white-space:nowrap;cursor:pointer;}
+.logo .talya{color:var(--rose-mid);}
+.logo .nails{color:var(--blanc);-webkit-text-stroke:1px var(--rose-mid);}
+.nav-right{display:flex;align-items:center;gap:0.4rem;flex-wrap:nowrap;}
+.nav-btn{background:none;border:none;font-family:'Jost',sans-serif;font-size:0.82rem;font-weight:400;
+  letter-spacing:0.07em;text-transform:uppercase;color:var(--texte-doux);cursor:pointer;
+  padding:0.45rem 0.9rem;border-radius:20px;transition:all 0.2s;white-space:nowrap;}
+.nav-btn:hover,.nav-btn.active{background:var(--rose-pale);color:var(--texte);}
+.nav-btn.admin-btn{color:var(--admin);border:1px solid var(--admin-border);}
+.nav-btn.admin-btn:hover{background:var(--admin-pale);}
+
+/* PROFIL */
+.profile-area{display:flex;align-items:center;gap:0.5rem;cursor:pointer;padding:0.3rem 0.8rem;
+  border-radius:30px;border:1px solid var(--bordure);background:var(--blanc);transition:all 0.2s;position:relative;}
+.profile-area:hover{border-color:var(--rose-mid);}
+.profile-avatar{width:32px;height:32px;border-radius:50%;background:var(--rose-pale);display:flex;
+  align-items:center;justify-content:center;font-size:0.8rem;color:var(--texte-doux);font-weight:500;overflow:hidden;flex-shrink:0;}
+.profile-avatar img{width:100%;height:100%;object-fit:cover;}
+.profile-name{font-size:0.82rem;color:var(--texte);max-width:90px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.admin-badge{font-size:0.65rem;background:var(--admin);color:#fff;padding:1px 6px;border-radius:8px;margin-left:2px;}
+.profile-dropdown{display:none;position:absolute;top:calc(100% + 8px);right:0;background:var(--blanc);
+  border:1px solid var(--bordure);border-radius:16px;padding:1rem;min-width:230px;
+  box-shadow:0 8px 30px rgba(244,135,177,0.15);z-index:300;}
+.profile-dropdown.open{display:block;}
+.profile-dropdown h4{font-family:'Cormorant Garamond',serif;font-size:1rem;margin-bottom:0.8rem;}
+.edit-field{display:flex;flex-direction:column;gap:0.3rem;margin-bottom:0.7rem;}
+.edit-field label{font-size:0.7rem;letter-spacing:0.06em;text-transform:uppercase;color:var(--texte-doux);}
+.edit-field input{border:1px solid var(--bordure);border-radius:8px;padding:0.4rem 0.6rem;
+  font-size:0.85rem;font-family:'Jost',sans-serif;color:var(--texte);outline:none;transition:border-color 0.2s;}
+.edit-field input:focus{border-color:var(--rose-mid);}
+.avatar-upload-label{display:inline-block;margin-bottom:0.8rem;font-size:0.78rem;color:var(--rose-mid);cursor:pointer;text-decoration:underline;}
+.btn-save{width:100%;background:linear-gradient(135deg,var(--rose-mid),var(--rose));color:white;border:none;
+  padding:0.5rem;border-radius:10px;font-family:'Jost',sans-serif;font-size:0.85rem;cursor:pointer;margin-bottom:0.5rem;transition:opacity 0.2s;}
+.btn-save:hover{opacity:0.9;}
+.btn-logout{width:100%;background:none;border:1px solid var(--bordure);color:var(--texte-doux);padding:0.45rem;
+  border-radius:10px;font-family:'Jost',sans-serif;font-size:0.82rem;cursor:pointer;transition:all 0.2s;}
+.btn-logout:hover{border-color:#e57;color:#e57;}
+
+/* PAGES */
+.page{display:none;padding-top:var(--nav-h);min-height:100vh;}
+.page.active{display:block;}
+
+/* ACCUEIL */
+.hero{min-height:calc(100vh - var(--nav-h));display:flex;flex-direction:column;align-items:center;
+  justify-content:center;text-align:center;padding:3rem 2rem;
+  background:radial-gradient(ellipse at 70% 30%,#ffe0ec 0%,transparent 60%),
+              radial-gradient(ellipse at 20% 80%,#ffd6e7 0%,transparent 50%),var(--gris-clair);}
+.hero-subtitle{font-size:0.78rem;letter-spacing:0.25em;text-transform:uppercase;color:var(--rose-mid);margin-bottom:1.2rem;}
+.hero h1{font-family:'Cormorant Garamond',serif;font-size:clamp(2.8rem,8vw,6rem);font-weight:300;line-height:1.1;color:var(--texte);margin-bottom:1.5rem;}
+.hero h1 em{color:var(--rose-mid);font-style:normal;}
+.hero > p{max-width:480px;font-size:1rem;line-height:1.7;color:var(--texte-doux);margin-bottom:2.5rem;}
+.btn-hero{background:linear-gradient(135deg,var(--rose-mid),var(--rose));color:white;padding:0.9rem 2.5rem;
+  border-radius:50px;font-size:0.85rem;letter-spacing:0.1em;text-transform:uppercase;border:none;cursor:pointer;
+  font-family:'Jost',sans-serif;transition:all 0.3s;box-shadow:0 4px 20px rgba(244,135,177,0.4);}
+.btn-hero:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(244,135,177,0.5);}
+.services{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1.5rem;padding:4rem 3rem;max-width:1000px;margin:0 auto;}
+.service-card{background:var(--blanc);border:1px solid var(--bordure);border-radius:20px;padding:2rem 1.5rem;text-align:center;transition:all 0.3s;}
+.service-card:hover{border-color:var(--rose-mid);transform:translateY(-4px);box-shadow:0 12px 40px rgba(244,135,177,0.12);}
+.service-icon{font-size:2rem;margin-bottom:1rem;}
+.service-card h3{font-family:'Cormorant Garamond',serif;font-size:1.3rem;margin-bottom:0.5rem;}
+.service-card p{font-size:0.85rem;color:var(--texte-doux);line-height:1.6;}
+.service-card .prix{display:inline-block;margin-top:1rem;color:var(--rose-mid);font-weight:500;font-size:0.9rem;}
+
+/* INFO */
+.info-section{max-width:800px;margin:0 auto;padding:4rem 2rem;}
+.info-section h2{font-family:'Cormorant Garamond',serif;font-size:2.5rem;font-weight:400;margin-bottom:2rem;}
+.info-block{background:var(--blanc);border:1px solid var(--bordure);border-radius:16px;padding:1.8rem;margin-bottom:1.5rem;}
+.info-block h3{font-family:'Cormorant Garamond',serif;font-size:1.3rem;margin-bottom:1rem;}
+.info-block p,.info-block li{font-size:0.92rem;color:var(--texte-doux);line-height:1.8;}
+.info-block ul{padding-left:1.2rem;}
+.horaire-row{display:flex;justify-content:space-between;font-size:0.9rem;padding:0.4rem 0;border-bottom:1px solid var(--rose-pale);}
+.horaire-row span:last-child{color:var(--rose-mid);font-weight:500;}
+
+/* RDV */
+.rdv-section{max-width:900px;margin:0 auto;padding:3rem 2rem;}
+.rdv-section h2{font-family:'Cormorant Garamond',serif;font-size:2.5rem;font-weight:400;margin-bottom:0.5rem;}
+.rdv-section .subtitle{color:var(--texte-doux);font-size:0.9rem;margin-bottom:2.5rem;}
+.login-required{background:var(--blanc);border:1px solid var(--bordure);border-radius:20px;padding:3rem;text-align:center;}
+.login-required p{color:var(--texte-doux);margin-bottom:1.5rem;font-size:0.95rem;}
+.calendrier-wrap{display:grid;grid-template-columns:1fr 1fr;gap:2rem;}
+@media(max-width:650px){.calendrier-wrap{grid-template-columns:1fr;}}
+.cal-box,.slots-box{background:var(--blanc);border:1px solid var(--bordure);border-radius:20px;padding:1.5rem;}
+.cal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.2rem;}
+.cal-header h3,.slots-box h3{font-family:'Cormorant Garamond',serif;font-size:1.2rem;margin-bottom:0;}
+.slots-box h3{margin-bottom:1rem;}
+.cal-nav{background:none;border:1px solid var(--bordure);border-radius:50%;width:30px;height:30px;cursor:pointer;font-size:1rem;color:var(--texte-doux);transition:all 0.2s;}
+.cal-nav:hover{border-color:var(--rose-mid);color:var(--rose-mid);}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;}
+.cal-day-name{text-align:center;font-size:0.68rem;letter-spacing:0.06em;color:var(--texte-doux);text-transform:uppercase;padding:0.3rem 0;}
+.cal-day{aspect-ratio:1;display:flex;align-items:center;justify-content:center;border-radius:50%;font-size:0.8rem;
+  cursor:pointer;transition:all 0.2s;color:var(--texte);border:1px solid transparent;position:relative;}
+.cal-day:hover{background:var(--rose-pale);}
+.cal-day.today{border-color:var(--rose-mid);color:var(--rose-mid);font-weight:500;}
+.cal-day.selected{background:var(--rose-mid);color:white!important;border-color:var(--rose-mid);}
+.cal-day.has-rdv::after{content:'';display:block;width:4px;height:4px;background:var(--rose-mid);border-radius:50%;position:absolute;bottom:2px;}
+.cal-day.disabled{color:#ccc;cursor:default;pointer-events:none;}
+.cal-day.indisponible{color:#ddd;cursor:not-allowed;text-decoration:line-through;}
+.slots-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:0.5rem;margin-bottom:1rem;}
+.slot{padding:0.5rem;border-radius:10px;border:1px solid var(--bordure);font-size:0.82rem;text-align:center;
+  cursor:pointer;transition:all 0.2s;background:var(--blanc);color:var(--texte);}
+.slot:hover{border-color:var(--rose-mid);color:var(--rose-mid);}
+.slot.selected{background:var(--rose-mid);color:white;border-color:var(--rose-mid);}
+.slot.booked{background:#f5f5f5;color:#bbb;cursor:not-allowed;border-color:#eee;text-decoration:line-through;}
+.rdv-form{background:var(--blanc);border:1px solid var(--bordure);border-radius:20px;padding:1.5rem;margin-top:1.5rem;}
+.rdv-form h3{font-family:'Cormorant Garamond',serif;font-size:1.2rem;margin-bottom:1.2rem;}
+.form-group{display:flex;flex-direction:column;gap:0.4rem;margin-bottom:1rem;}
+.form-group label{font-size:0.72rem;letter-spacing:0.06em;text-transform:uppercase;color:var(--texte-doux);}
+.form-group select,.form-group textarea,.form-group input{border:1px solid var(--bordure);border-radius:10px;padding:0.6rem 0.8rem;font-size:0.9rem;font-family:'Jost',sans-serif;color:var(--texte);outline:none;transition:border-color 0.2s;background:var(--blanc);}
+.form-group select:focus,.form-group textarea:focus,.form-group input:focus{border-color:var(--rose-mid);}
+.form-group textarea{resize:vertical;min-height:70px;}
+.btn-rdv{width:100%;padding:0.8rem;background:linear-gradient(135deg,var(--rose-mid),var(--rose));color:white;border:none;
+  border-radius:12px;font-family:'Jost',sans-serif;font-size:0.9rem;cursor:pointer;transition:all 0.3s;box-shadow:0 4px 15px rgba(244,135,177,0.3);}
+.btn-rdv:hover{transform:translateY(-1px);}
+.mes-rdv-section{margin-top:2.5rem;}
+.mes-rdv-section h3{font-family:'Cormorant Garamond',serif;font-size:1.5rem;margin-bottom:1rem;}
+.rdv-card{background:var(--blanc);border:1px solid var(--bordure);border-radius:14px;padding:1rem 1.2rem;
+  margin-bottom:0.8rem;display:flex;align-items:center;gap:1rem;}
+.rdv-dot{width:10px;height:10px;border-radius:50%;background:var(--rose-mid);flex-shrink:0;}
+.rdv-info{flex:1;}
+.rdv-info strong{font-size:0.92rem;display:block;}
+.rdv-info span{font-size:0.8rem;color:var(--texte-doux);}
+.rdv-annuler{background:none;border:1px solid #f5b3b3;color:#e57;border-radius:8px;padding:0.3rem 0.7rem;font-size:0.78rem;cursor:pointer;transition:all 0.2s;}
+.rdv-annuler:hover{background:#fff0f0;}
+
+/* ═════════ ADMIN ═════════ */
+.page-admin{background:var(--gris-clair);}
+.admin-layout{display:grid;grid-template-columns:230px 1fr;min-height:calc(100vh - var(--nav-h));}
+@media(max-width:700px){.admin-layout{grid-template-columns:1fr;}}
+.admin-sidebar{background:var(--blanc);border-right:1px solid var(--bordure);padding:1.5rem 0;position:sticky;top:var(--nav-h);height:calc(100vh - var(--nav-h));overflow-y:auto;}
+.admin-sidebar-title{font-family:'Cormorant Garamond',serif;font-size:1.1rem;padding:0 1.2rem 1rem;color:var(--texte);border-bottom:1px solid var(--rose-pale);margin-bottom:0.5rem;}
+.admin-nav-item{display:block;width:100%;background:none;border:none;text-align:left;padding:0.65rem 1.2rem;
+  font-family:'Jost',sans-serif;font-size:0.84rem;color:var(--texte-doux);cursor:pointer;transition:all 0.15s;border-left:3px solid transparent;}
+.admin-nav-item:hover{background:var(--admin-pale);color:var(--admin);}
+.admin-nav-item.active{background:var(--admin-pale);color:var(--admin);border-left-color:var(--admin);font-weight:500;}
+.admin-content{padding:2rem 2.5rem;}
+.admin-section{display:none;}
+.admin-section.active{display:block;}
+.admin-section > h2{font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:400;margin-bottom:0.3rem;}
+.admin-desc{color:var(--texte-doux);font-size:0.85rem;margin-bottom:2rem;}
+.admin-card{background:var(--blanc);border:1px solid var(--bordure);border-radius:16px;padding:1.5rem;margin-bottom:1.5rem;}
+.admin-card > h3{font-family:'Cormorant Garamond',serif;font-size:1.15rem;margin-bottom:1.2rem;padding-bottom:0.6rem;border-bottom:1px solid var(--rose-pale);}
+.admin-field{display:grid;grid-template-columns:170px 1fr;align-items:start;gap:0.8rem;margin-bottom:0.8rem;}
+@media(max-width:500px){.admin-field{grid-template-columns:1fr;}}
+.admin-field > label{font-size:0.78rem;color:var(--texte-doux);letter-spacing:0.04em;padding-top:0.5rem;}
+.admin-field input,.admin-field textarea,.admin-field select{border:1px solid var(--bordure);border-radius:8px;
+  padding:0.45rem 0.7rem;font-size:0.88rem;font-family:'Jost',sans-serif;color:var(--texte);outline:none;
+  transition:border-color 0.2s;background:var(--blanc);width:100%;}
+.admin-field input:focus,.admin-field textarea:focus{border-color:var(--admin);}
+.admin-field textarea{resize:vertical;min-height:70px;}
+.btn-admin-save{background:var(--admin);color:white;border:none;padding:0.6rem 1.8rem;border-radius:10px;
+  font-family:'Jost',sans-serif;font-size:0.88rem;cursor:pointer;transition:all 0.2s;margin-top:0.3rem;}
+.btn-admin-save:hover{opacity:0.88;transform:translateY(-1px);}
+
+/* Services admin list */
+.services-admin-list{display:flex;flex-direction:column;gap:0.6rem;margin-bottom:1rem;}
+.svc-row{display:grid;grid-template-columns:44px 1fr 1fr 90px 34px;align-items:center;gap:0.5rem;
+  background:var(--rose-pale);border:1px solid var(--bordure);border-radius:12px;padding:0.6rem 0.8rem;}
+.svc-row input{border:1px solid var(--bordure);border-radius:6px;padding:0.3rem 0.5rem;
+  font-size:0.85rem;font-family:'Jost',sans-serif;background:var(--blanc);color:var(--texte);outline:none;width:100%;}
+.svc-row input:focus{border-color:var(--admin);}
+.svc-icon-inp{font-size:1.2rem;text-align:center;border:none!important;background:transparent!important;padding:0!important;}
+.btn-del{background:none;border:none;color:#e57;cursor:pointer;font-size:1rem;}
+.btn-add-row{background:none;border:1px dashed var(--bordure);color:var(--texte-doux);padding:0.45rem 1rem;
+  border-radius:10px;font-size:0.82rem;cursor:pointer;font-family:'Jost',sans-serif;transition:all 0.2s;width:100%;}
+.btn-add-row:hover{border-color:var(--admin);color:var(--admin);}
+
+/* Horaires admin */
+.horaires-admin{display:flex;flex-direction:column;gap:0.45rem;}
+.h-row{display:grid;grid-template-columns:100px 120px 120px auto;align-items:center;gap:0.6rem;
+  padding:0.5rem 0.8rem;background:var(--rose-pale);border-radius:10px;}
+.h-row label:first-child{font-size:0.85rem;font-weight:500;}
+.h-row input[type=time]{border:1px solid var(--bordure);border-radius:6px;padding:0.3rem 0.5rem;font-size:0.82rem;font-family:'Jost',sans-serif;background:var(--blanc);width:100%;outline:none;}
+.h-row input[type=time]:focus{border-color:var(--admin);}
+.ferme-check{display:flex;align-items:center;gap:0.4rem;font-size:0.78rem;color:var(--texte-doux);white-space:nowrap;}
+.ferme-check input{accent-color:var(--admin);}
+
+/* Créneaux */
+.creneaux-wrap{display:flex;flex-wrap:wrap;gap:0.5rem;margin-bottom:1rem;}
+.ctag{display:flex;align-items:center;gap:0.3rem;background:var(--rose-pale);border:1px solid var(--bordure);
+  border-radius:20px;padding:0.3rem 0.8rem;font-size:0.82rem;}
+.ctag button{background:none;border:none;color:#e57;cursor:pointer;font-size:0.9rem;line-height:1;padding:0;}
+.add-c-row{display:flex;gap:0.6rem;align-items:center;}
+.add-c-row input[type=time]{border:1px solid var(--bordure);border-radius:8px;padding:0.4rem 0.6rem;font-size:0.85rem;font-family:'Jost',sans-serif;outline:none;}
+.add-c-row input:focus{border-color:var(--admin);}
+.btn-add-c{background:none;border:1px solid var(--admin-border);color:var(--admin);padding:0.4rem 0.9rem;border-radius:8px;font-size:0.83rem;cursor:pointer;font-family:'Jost',sans-serif;transition:all 0.2s;}
+.btn-add-c:hover{background:var(--admin-pale);}
+
+/* Admins */
+.admin-list{display:flex;flex-direction:column;gap:0.5rem;margin-bottom:1rem;}
+.admin-item{display:flex;align-items:center;justify-content:space-between;background:var(--admin-pale);
+  border:1px solid var(--admin-border);border-radius:10px;padding:0.5rem 0.8rem;}
+.admin-item span{font-size:0.85rem;color:var(--admin);}
+.admin-item button{background:none;border:none;color:#e57;cursor:pointer;font-size:0.9rem;}
+.add-admin-row{display:flex;gap:0.6rem;}
+.add-admin-row input{flex:1;border:1px solid var(--bordure);border-radius:8px;padding:0.45rem 0.7rem;font-size:0.85rem;font-family:'Jost',sans-serif;outline:none;}
+.add-admin-row input:focus{border-color:var(--admin);}
+
+/* Table RDV admin */
+.rdv-table{width:100%;border-collapse:collapse;font-size:0.84rem;}
+.rdv-table th{text-align:left;padding:0.5rem 0.8rem;background:var(--rose-pale);color:var(--texte-doux);font-weight:400;font-size:0.73rem;letter-spacing:0.05em;text-transform:uppercase;}
+.rdv-table td{padding:0.6rem 0.8rem;border-bottom:1px solid var(--rose-pale);vertical-align:middle;}
+.rdv-table tr:hover td{background:rgba(252,228,236,0.3);}
+.badge-up{background:#dcfce7;color:#166534;border-radius:6px;padding:2px 8px;font-size:0.72rem;}
+.badge-past{background:#f3f4f6;color:#6b7280;border-radius:6px;padding:2px 8px;font-size:0.72rem;}
+.btn-del-rdv{background:none;border:1px solid #fca5a5;color:#ef4444;border-radius:6px;padding:2px 8px;font-size:0.75rem;cursor:pointer;}
+.btn-del-rdv:hover{background:#fef2f2;}
+
+/* TOAST */
+.toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%);background:var(--texte);color:white;
+  padding:0.8rem 1.8rem;border-radius:50px;font-size:0.88rem;opacity:0;pointer-events:none;transition:opacity 0.4s;z-index:9999;}
+.toast.show{opacity:1;}
+.toast.rose{background:linear-gradient(135deg,var(--rose-mid),var(--rose));}
+.toast.ok{background:var(--admin);}
+
+footer{text-align:center;padding:2rem;border-top:1px solid var(--bordure);color:var(--texte-doux);font-size:0.82rem;}
+footer span{color:var(--rose-mid);}
+</style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav>
+  <span class="logo" onclick="showPage('accueil')"><span class="talya">Talya</span><span class="nails">Nails</span></span>
+  <div class="nav-right">
+    <button class="nav-btn active" onclick="showPage('accueil')">Accueil</button>
+    <button class="nav-btn" onclick="showPage('info')">Info</button>
+    <button class="nav-btn" onclick="showPage('rdv')">Rendez-vous</button>
+    <button class="nav-btn admin-btn" id="admin-nav-btn" style="display:none" onclick="showPage('admin')">⚙ Admin</button>
+    <div id="google-btn-wrap">
+      <div id="g_id_onload" data-client_id="VOTRE_GOOGLE_CLIENT_ID_ICI" data-callback="onGoogleSignIn" data-auto_prompt="false"></div>
+      <div class="g_id_signin" data-type="standard" data-size="medium" data-theme="outline" data-text="signin_with" data-shape="pill"></div>
+    </div>
+    <div class="profile-area" id="profile-area" style="display:none" onclick="toggleDropdown(event)">
+      <div class="profile-avatar" id="profile-avatar-nav"></div>
+      <span class="profile-name" id="profile-name-nav">Profil</span>
+      <span class="admin-badge" id="admin-badge" style="display:none">Admin</span>
+      <div class="profile-dropdown" id="profile-dropdown">
+        <h4>✦ Mon Profil</h4>
+        <div class="edit-field">
+          <label>Prénom affiché</label>
+          <input type="text" id="edit-prenom" placeholder="Ton prénom">
+        </div>
+        <label class="avatar-upload-label" for="avatar-upload">📷 Changer ma photo</label>
+        <input type="file" id="avatar-upload" accept="image/*" style="display:none" onchange="handleAvatarUpload(event)">
+        <br>
+        <button class="btn-save" onclick="saveProfile()">Sauvegarder</button>
+        <button class="btn-logout" onclick="logout()">Se déconnecter</button>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<div class="toast" id="toast"></div>
+
+<!-- ══════ ACCUEIL ══════ -->
+<div class="page active" id="page-accueil">
+  <div class="hero">
+    <p class="hero-subtitle" id="h-subtitle"></p>
+    <h1 id="h-title"></h1>
+    <p id="h-desc"></p>
+    <button class="btn-hero" onclick="showPage('rdv')">Prendre Rendez-vous</button>
+  </div>
+  <div class="services" id="services-grid"></div>
+  <footer>Fait avec <span>♥</span> par <span id="footer-nom"></span> · Tous droits réservés</footer>
+</div>
+
+<!-- ══════ INFO ══════ -->
+<div class="page" id="page-info">
+  <div class="info-section">
+    <h2>Informations</h2>
+    <div class="info-block"><h3>📍 Localisation</h3><p id="i-loc"></p></div>
+    <div class="info-block"><h3>🕐 Horaires</h3><div id="i-horaires"></div></div>
+    <div class="info-block"><h3>💎 Nos Prestations</h3><ul id="i-prest"></ul></div>
+    <div class="info-block"><h3>📩 Contact</h3><p id="i-contact"></p></div>
+  </div>
+</div>
+
+<!-- ══════ RDV ══════ -->
+<div class="page" id="page-rdv">
+  <div class="rdv-section">
+    <h2>Prendre Rendez-vous</h2>
+    <p class="subtitle">Connectez-vous avec Google pour réserver votre créneau</p>
+    <div class="login-required" id="rdv-login-msg">
+      <p>🔐 Connectez-vous avec votre compte Google pour réserver.</p>
+      <div class="g_id_signin" data-type="standard" data-size="large" data-theme="outline" data-text="signin_with" data-shape="rectangular"></div>
+    </div>
+    <div id="rdv-interface" style="display:none">
+      <div class="calendrier-wrap">
+        <div class="cal-box">
+          <div class="cal-header">
+            <button class="cal-nav" onclick="changeMonth(-1)">&#8249;</button>
+            <h3 id="cal-title"></h3>
+            <button class="cal-nav" onclick="changeMonth(1)">&#8250;</button>
+          </div>
+          <div class="cal-grid" id="cal-grid"></div>
+        </div>
+        <div>
+          <div class="slots-box">
+            <h3 id="slots-title">Choisissez un jour</h3>
+            <div class="slots-grid" id="slots-grid"><p style="grid-column:1/-1;color:var(--texte-doux);font-size:0.85rem;">← Sélectionnez une date</p></div>
+          </div>
+        </div>
+      </div>
+      <div class="rdv-form" id="rdv-form" style="display:none">
+        <h3>✦ Finaliser votre réservation</h3>
+        <div id="recap-rdv" style="background:var(--rose-pale);border-radius:10px;padding:0.8rem;margin-bottom:1rem;font-size:0.88rem;"></div>
+        <div class="form-group"><label>Prestation souhaitée</label><select id="prestation"></select></div>
+        <div class="form-group"><label>Téléphone (optionnel)</label><input type="tel" id="tel-rdv" placeholder="06 XX XX XX XX"></div>
+        <div class="form-group"><label>Message / Inspirations</label><textarea id="msg-rdv" placeholder="Ex : fleurs roses avec strass 🌸"></textarea></div>
+        <button class="btn-rdv" onclick="confirmerRDV()">Confirmer le Rendez-vous</button>
+      </div>
+      <div class="mes-rdv-section">
+        <h3>Mes Rendez-vous</h3>
+        <div id="liste-rdv"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════ ADMIN ══════ -->
+<div class="page page-admin" id="page-admin">
+  <div class="admin-layout">
+    <div class="admin-sidebar">
+      <div class="admin-sidebar-title">⚙ Administration</div>
+      <button class="admin-nav-item active" onclick="switchAdmin('accueil-cfg',this)">🏠 Page d'accueil</button>
+      <button class="admin-nav-item" onclick="switchAdmin('services-cfg',this)">💅 Prestations & Prix</button>
+      <button class="admin-nav-item" onclick="switchAdmin('horaires-cfg',this)">🕐 Horaires</button>
+      <button class="admin-nav-item" onclick="switchAdmin('creneaux-cfg',this)">📅 Créneaux RDV</button>
+      <button class="admin-nav-item" onclick="switchAdmin('info-cfg',this)">📍 Infos & Contact</button>
+      <button class="admin-nav-item" onclick="switchAdmin('rdv-all',this)">📋 Tous les RDV</button>
+      <button class="admin-nav-item" onclick="switchAdmin('admins-cfg',this)">👑 Administrateurs</button>
+      <button class="admin-nav-item" onclick="switchAdmin('email-cfg',this)">📧 Config Email</button>
+    </div>
+    <div class="admin-content">
+
+      <!-- Accueil config -->
+      <div class="admin-section active" id="as-accueil-cfg">
+        <h2>Page d'accueil</h2>
+        <p class="admin-desc">Modifiez les textes affichés sur la page d'accueil.</p>
+        <div class="admin-card">
+          <h3>Textes du héros</h3>
+          <div class="admin-field"><label>Bandeau / sous-titre</label><input id="a-subtitle" type="text"></div>
+          <div class="admin-field"><label>Titre principal</label><input id="a-title" type="text"></div>
+          <div class="admin-field"><label>Description</label><textarea id="a-desc"></textarea></div>
+          <div class="admin-field"><label>Nom dans le footer</label><input id="a-footer" type="text"></div>
+          <button class="btn-admin-save" onclick="saveAccueil()">💾 Sauvegarder</button>
+        </div>
+      </div>
+
+      <!-- Services config -->
+      <div class="admin-section" id="as-services-cfg">
+        <h2>Prestations & Prix</h2>
+        <p class="admin-desc">Modifiez vos prestations. Les changements s'appliquent sur toutes les pages.</p>
+        <div class="admin-card">
+          <h3>Liste des prestations</h3>
+          <p style="font-size:0.75rem;color:var(--texte-doux);margin-bottom:0.8rem;">Icône &bull; Nom &bull; Description &bull; Prix (€)</p>
+          <div class="services-admin-list" id="svc-admin-list"></div>
+          <button class="btn-add-row" onclick="addSvc()">+ Ajouter une prestation</button>
+          <br><br>
+          <button class="btn-admin-save" onclick="saveSvc()">💾 Sauvegarder</button>
+        </div>
+      </div>
+
+      <!-- Horaires config -->
+      <div class="admin-section" id="as-horaires-cfg">
+        <h2>Horaires d'ouverture</h2>
+        <p class="admin-desc">Définissez les horaires d'ouverture et les jours de fermeture.</p>
+        <div class="admin-card">
+          <h3>Horaires par jour</h3>
+          <div class="horaires-admin" id="hor-admin"></div>
+          <br>
+          <button class="btn-admin-save" onclick="saveHoraires()">💾 Sauvegarder</button>
+        </div>
+      </div>
+
+      <!-- Créneaux config -->
+      <div class="admin-section" id="as-creneaux-cfg">
+        <h2>Créneaux de rendez-vous</h2>
+        <p class="admin-desc">Ajoutez ou supprimez des créneaux horaires disponibles pour les réservations.</p>
+        <div class="admin-card">
+          <h3>Créneaux disponibles</h3>
+          <div class="creneaux-wrap" id="cren-wrap"></div>
+          <div class="add-c-row">
+            <input type="time" id="new-cren" value="09:00">
+            <button class="btn-add-c" onclick="addCren()">+ Ajouter</button>
+          </div>
+          <br>
+          <button class="btn-admin-save" onclick="saveCren()">💾 Sauvegarder</button>
+        </div>
+      </div>
+
+      <!-- Info config -->
+      <div class="admin-section" id="as-info-cfg">
+        <h2>Infos & Contact</h2>
+        <p class="admin-desc">Modifiez les informations de la page Info.</p>
+        <div class="admin-card">
+          <h3>Localisation</h3>
+          <div class="admin-field"><label>Texte de localisation</label><textarea id="i-loc-inp"></textarea></div>
+        </div>
+        <div class="admin-card">
+          <h3>Contact</h3>
+          <div class="admin-field"><label>Instagram</label><input id="i-insta" type="text" placeholder="@talyanails"></div>
+          <div class="admin-field"><label>Email affiché</label><input id="i-email-aff" type="text"></div>
+          <div class="admin-field"><label>Texte contact libre</label><textarea id="i-contact-extra"></textarea></div>
+        </div>
+        <div class="admin-card">
+          <h3>Prestations (liste page Info)</h3>
+          <p style="font-size:0.75rem;color:var(--texte-doux);margin-bottom:0.6rem;">Une prestation par ligne</p>
+          <textarea id="i-prest-inp" style="width:100%;min-height:120px;border:1px solid var(--bordure);border-radius:10px;padding:0.6rem;font-family:'Jost',sans-serif;font-size:0.88rem;color:var(--texte);outline:none;resize:vertical;"></textarea>
+          <br><br>
+          <button class="btn-admin-save" onclick="saveInfo()">💾 Sauvegarder</button>
+        </div>
+      </div>
+
+      <!-- Tous les RDV -->
+      <div class="admin-section" id="as-rdv-all">
+        <h2>Tous les Rendez-vous</h2>
+        <p class="admin-desc">Consultez et gérez tous les rendez-vous pris sur le site.</p>
+        <div class="admin-card" style="overflow-x:auto;">
+          <h3>Liste complète</h3>
+          <div id="all-rdv-wrap"></div>
+        </div>
+      </div>
+
+      <!-- Admins config -->
+      <div class="admin-section" id="as-admins-cfg">
+        <h2>Administrateurs</h2>
+        <p class="admin-desc">Les comptes Google listés ici ont accès au panneau d'administration.</p>
+        <div class="admin-card">
+          <h3>Emails autorisés</h3>
+          <div class="admin-list" id="admin-list"></div>
+          <div class="add-admin-row">
+            <input type="email" id="new-admin-inp" placeholder="email@gmail.com">
+            <button class="btn-admin-save" style="margin-top:0" onclick="addAdmin()">+ Ajouter</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Email config -->
+      <div class="admin-section" id="as-email-cfg">
+        <h2>Configuration Email</h2>
+        <p class="admin-desc">Renseignez vos identifiants EmailJS pour activer l'envoi automatique d'emails à chaque réservation.</p>
+        <div class="admin-card">
+          <h3>EmailJS</h3>
+          <div class="admin-field"><label>Public Key</label><input id="ej-key" type="text" placeholder="votre_public_key"></div>
+          <div class="admin-field"><label>Service ID</label><input id="ej-svc" type="text" placeholder="service_xxxxxxx"></div>
+          <div class="admin-field"><label>Template ID</label><input id="ej-tpl" type="text" placeholder="template_xxxxxxx"></div>
+          <div class="admin-field"><label>Email propriétaire</label><input id="ej-owner" type="email" placeholder="talyanails@gmail.com"></div>
+          <button class="btn-admin-save" onclick="saveEmail()">💾 Sauvegarder</button>
+        </div>
+        <div class="admin-card">
+          <h3>Google Sign-In Client ID</h3>
+          <div class="admin-field"><label>Client ID OAuth 2.0</label><input id="g-cid" type="text" placeholder="xxxxx.apps.googleusercontent.com"></div>
+          <button class="btn-admin-save" onclick="saveGCID()">💾 Sauvegarder</button>
+          <p style="font-size:0.76rem;color:var(--texte-doux);margin-top:0.6rem;">⚠ Nécessite un rechargement de page pour être actif.</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<script>
+// ══════════════════════════════════════════════
+// DEFAULTS & STORAGE
+// ══════════════════════════════════════════════
+const DEF = {
+  admins: ['talyanails@gmail.com'],
+  hero: { subtitle:'✦ Nail Art & Manucure à domicile ✦', title:"L'art des ongles à portée de main", desc:'Des poses soignées, des designs uniques et une expérience douce pour sublimer vos ongles.', footer:'Talya Nails' },
+  services: [
+    {id:1,icon:'💅',nom:'Pose gel',desc:'Pose complète avec gel UV, tenue longue durée.',prix:'45'},
+    {id:2,icon:'🌸',nom:'Nail Art',desc:'Designs personnalisés : fleurs, dégradés, strass.',prix:'55'},
+    {id:3,icon:'✨',nom:'Manucure',desc:'Soin complet sur ongles naturels, semi-permanent.',prix:'30'},
+    {id:4,icon:'🪄',nom:'Dépose',desc:'Retrait en douceur sans abimer la plaque.',prix:'15'}
+  ],
+  horaires: [
+    {jour:'Lundi',    ouv:'10:00',fer:'19:00',ferme:false},
+    {jour:'Mardi',    ouv:'10:00',fer:'19:00',ferme:false},
+    {jour:'Mercredi', ouv:'10:00',fer:'19:00',ferme:false},
+    {jour:'Jeudi',    ouv:'10:00',fer:'20:00',ferme:false},
+    {jour:'Vendredi', ouv:'09:00',fer:'20:00',ferme:false},
+    {jour:'Samedi',   ouv:'09:00',fer:'18:00',ferme:false},
+    {jour:'Dimanche', ouv:'',     fer:'',     ferme:true}
+  ],
+  creneaux: ['10:00','11:00','12:00','14:00','15:00','16:00','17:00','18:00'],
+  info: {
+    loc:'Séances à domicile ou sur rendez-vous à mon atelier. Zone : Paris & Île-de-France.',
+    insta:'@talyanails', emailAff:'talyanails@gmail.com',
+    contactExtra:"Pour toute question, envoyez-moi un message !",
+    prestList:"Pose gel (capsules, américaine, babyboomer)\nSemi-permanent sur ongles naturels\nNail art personnalisé\nFrench manucure classique ou colorée\nDépose et soin renforcateur"
+  },
+  emailjs:{key:'',svc:'',tpl:'',owner:'talyanails@gmail.com'},
+  gcid:'VOTRE_GOOGLE_CLIENT_ID_ICI'
+};
+
+function ld(k,d){ try{const v=localStorage.getItem('tn_'+k);return v?JSON.parse(v):d;}catch{return d;} }
+function sv(k,v){ localStorage.setItem('tn_'+k,JSON.stringify(v)); }
+
+// État global
+let CFG = {
+  admins:   ld('admins',   DEF.admins),
+  hero:     ld('hero',     DEF.hero),
+  services: ld('services', DEF.services),
+  horaires: ld('horaires', DEF.horaires),
+  creneaux: ld('creneaux', DEF.creneaux),
+  info:     ld('info',     DEF.info),
+  emailjs:  ld('emailjs',  DEF.emailjs),
+  gcid:     ld('gcid',     DEF.gcid)
+};
+let allRDV      = ld('rdv',      []);
+let userProfs   = ld('profiles', {});
+let currentUser = null;
+let selDate = null, selSlot = null;
+const today = new Date();
+let calY = today.getFullYear(), calM = today.getMonth();
+
+// ══════════════════════════════════════════════
+// NAVIGATION
+// ══════════════════════════════════════════════
+function showPage(id) {
+  if(id==='admin' && (!currentUser?.isAdmin)) { showToast('Accès réservé aux admins'); return; }
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  const map = {accueil:0,info:1,rdv:2};
+  if(map[id]!==undefined) document.querySelectorAll('.nav-btn')[map[id]].classList.add('active');
+  if(id==='accueil') renderAccueil();
+  if(id==='info') renderInfo();
+  if(id==='rdv') refreshRDV();
+  if(id==='admin') loadAdminSection('accueil-cfg');
+}
+
+function switchAdmin(sid, btn) {
+  document.querySelectorAll('.admin-nav-item').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.admin-section').forEach(s=>s.classList.remove('active'));
+  document.getElementById('as-'+sid).classList.add('active');
+  loadAdminSection(sid);
+}
+
+// ══════════════════════════════════════════════
+// GOOGLE AUTH
+// ══════════════════════════════════════════════
+function onGoogleSignIn(resp) {
+  try {
+    const b64 = resp.credential.split('.')[1].replace(/-/g,'+').replace(/_/g,'/');
+    const pl = JSON.parse(atob(b64));
+    const u = {id:pl.sub, name:pl.name, email:pl.email, picture:pl.picture};
+    const p = userProfs[u.id]||{};
+    u.displayName = p.prenom||u.name;
+    u.customPicture = p.photo||null;
+    u.isAdmin = CFG.admins.includes(u.email);
+    currentUser = u;
+    updateNav();
+    refreshRDV();
+    if(u.isAdmin) showToast('Bienvenue '+u.displayName+' 👑 (Admin)','ok');
+    else showToast('Bienvenue '+u.displayName+' 🌸','rose');
+  } catch(e) { showToast('Erreur connexion'); }
+}
+
+function updateNav() {
+  if(!currentUser) return;
+  document.getElementById('google-btn-wrap').style.display='none';
+  document.getElementById('profile-area').style.display='flex';
+  document.getElementById('profile-name-nav').textContent = currentUser.displayName;
+  const av = document.getElementById('profile-avatar-nav');
+  const pic = currentUser.customPicture||currentUser.picture;
+  av.innerHTML = pic ? `<img src="${pic}" alt="">` : currentUser.displayName.charAt(0).toUpperCase();
+  document.getElementById('admin-badge').style.display = currentUser.isAdmin?'inline':'none';
+  document.getElementById('admin-nav-btn').style.display = currentUser.isAdmin?'inline-block':'none';
+  document.getElementById('edit-prenom').value = currentUser.displayName;
+}
+
+function toggleDropdown(e) {
+  e.stopPropagation();
+  document.getElementById('profile-dropdown').classList.toggle('open');
+}
+document.addEventListener('click', ()=>{ const d=document.getElementById('profile-dropdown'); if(d) d.classList.remove('open'); });
+
+function saveProfile() {
+  if(!currentUser) return;
+  const prenom = document.getElementById('edit-prenom').value.trim();
+  if(prenom) currentUser.displayName = prenom;
+  userProfs[currentUser.id] = userProfs[currentUser.id]||{};
+  userProfs[currentUser.id].prenom = currentUser.displayName;
+  if(currentUser.customPicture) userProfs[currentUser.id].photo = currentUser.customPicture;
+  sv('profiles',userProfs);
+  updateNav();
+  document.getElementById('profile-dropdown').classList.remove('open');
+  showToast('Profil mis à jour ✨','rose');
+}
+function handleAvatarUpload(e) {
+  const f=e.target.files[0]; if(!f) return;
+  const r=new FileReader();
+  r.onload=ev=>{ if(currentUser){currentUser.customPicture=ev.target.result; updateNav();} };
+  r.readAsDataURL(f);
+}
+function logout() {
+  currentUser=null;
+  document.getElementById('google-btn-wrap').style.display='flex';
+  document.getElementById('profile-area').style.display='none';
+  document.getElementById('admin-nav-btn').style.display='none';
+  document.getElementById('profile-dropdown').classList.remove('open');
+  refreshRDV();
+  showToast('Déconnecté');
+}
+
+// ══════════════════════════════════════════════
+// RENDER ACCUEIL
+// ══════════════════════════════════════════════
+function renderAccueil() {
+  const h=CFG.hero;
+  document.getElementById('h-subtitle').textContent = h.subtitle;
+  document.getElementById('h-title').innerHTML = h.title.replace(/ongles/gi,'<em>ongles</em>');
+  document.getElementById('h-desc').textContent = h.desc;
+  document.getElementById('footer-nom').textContent = h.footer;
+  document.getElementById('services-grid').innerHTML = CFG.services.map(s=>`
+    <div class="service-card">
+      <div class="service-icon">${s.icon}</div>
+      <h3>${s.nom}</h3>
+      <p>${s.desc}</p>
+      <span class="prix">À partir de ${s.prix}€</span>
+    </div>`).join('');
+}
+
+// ══════════════════════════════════════════════
+// RENDER INFO
+// ══════════════════════════════════════════════
+function renderInfo() {
+  const inf=CFG.info;
+  document.getElementById('i-loc').textContent = inf.loc;
+  document.getElementById('i-horaires').innerHTML = CFG.horaires.map(h=>`
+    <div class="horaire-row"><span>${h.jour}</span><span>${h.ferme?'Fermé':h.ouv+' – '+h.fer}</span></div>`).join('');
+  document.getElementById('i-prest').innerHTML = inf.prestList.split('\n').filter(l=>l.trim()).map(l=>`<li>${l}</li>`).join('');
+  document.getElementById('i-contact').innerHTML = `Instagram : <strong>${inf.insta}</strong><br>Email : <strong>${inf.emailAff}</strong><br>${inf.contactExtra}`;
+}
+
+// ══════════════════════════════════════════════
+// RDV
+// ══════════════════════════════════════════════
+function refreshRDV() {
+  const hasUser = !!currentUser;
+  document.getElementById('rdv-login-msg').style.display = hasUser?'none':'block';
+  document.getElementById('rdv-interface').style.display = hasUser?'block':'none';
+  if(hasUser) {
+    const sel=document.getElementById('prestation');
+    sel.innerHTML='<option value="">Choisir...</option>'+CFG.services.map(s=>`<option value="${s.nom}">${s.nom} — ${s.prix}€</option>`).join('');
+    renderCal(); renderMesRDV();
+  }
+}
+
+function changeMonth(d) { calM+=d; if(calM>11){calM=0;calY++;} if(calM<0){calM=11;calY--;} renderCal(); }
+
+function renderCal() {
+  const MOIS=['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
+  document.getElementById('cal-title').textContent=MOIS[calM]+' '+calY;
+  const grid=document.getElementById('cal-grid'); grid.innerHTML='';
+  ['Lu','Ma','Me','Je','Ve','Sa','Di'].forEach(j=>{ const d=document.createElement('div');d.className='cal-day-name';d.textContent=j;grid.appendChild(d); });
+  // jours fermés: horaires index 0=Lundi→getDay 1 ... index 6=Dimanche→getDay 0
+  const closedDays=CFG.horaires.map((h,i)=>h.ferme?((i+1)%7):null).filter(x=>x!==null);
+  const first=new Date(calY,calM,1).getDay(), off=first===0?6:first-1;
+  const dim=new Date(calY,calM+1,0).getDate();
+  for(let i=0;i<off;i++) grid.appendChild(document.createElement('div'));
+  for(let d=1;d<=dim;d++) {
+    const dObj=new Date(calY,calM,d), ds=dk(dObj);
+    const el=document.createElement('div'); el.className='cal-day'; el.textContent=d;
+    const past=dObj<new Date(today.getFullYear(),today.getMonth(),today.getDate());
+    const closed=closedDays.includes(dObj.getDay());
+    if(past||closed){ el.classList.add(closed?'indisponible':'disabled'); }
+    else {
+      if(allRDV.some(r=>r.date===ds)) el.classList.add('has-rdv');
+      if(ds===dk(today)) el.classList.add('today');
+      if(selDate===ds) el.classList.add('selected');
+      el.onclick=()=>pickDate(ds,dObj);
+    }
+    grid.appendChild(el);
+  }
+}
+function dk(d){ return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+function pickDate(ds,dObj){ selDate=ds; selSlot=null; document.getElementById('rdv-form').style.display='none'; renderCal(); renderSlots(ds,dObj); }
+function renderSlots(ds,dObj) {
+  const J=['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'];
+  const M=['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
+  document.getElementById('slots-title').textContent=J[dObj.getDay()]+' '+dObj.getDate()+' '+M[dObj.getMonth()];
+  const booked=allRDV.filter(r=>r.date===ds).map(r=>r.heure);
+  const g=document.getElementById('slots-grid'); g.innerHTML='';
+  CFG.creneaux.forEach(h=>{
+    const s=document.createElement('div'); s.className='slot'; s.textContent=h;
+    if(booked.includes(h)) s.classList.add('booked');
+    else s.onclick=()=>pickSlot(h,s);
+    g.appendChild(s);
+  });
+}
+function pickSlot(h,el){ selSlot=h; document.querySelectorAll('.slot').forEach(s=>s.classList.remove('selected')); el.classList.add('selected'); showRDVForm(); }
+function showRDVForm() {
+  const f=document.getElementById('rdv-form'); f.style.display='block';
+  const [y,m,d]=selDate.split('-');
+  const M=['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
+  document.getElementById('recap-rdv').innerHTML=`📅 <strong>${d} ${M[parseInt(m)-1]} ${y}</strong> à <strong>${selSlot}</strong>`;
+  f.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+function confirmerRDV() {
+  if(!currentUser||!selDate||!selSlot) return;
+  const prest=document.getElementById('prestation').value;
+  if(!prest){showToast('Choisissez une prestation');return;}
+  const rdv={id:Date.now(),userId:currentUser.id,userEmail:currentUser.email,userName:currentUser.displayName,
+    date:selDate,heure:selSlot,prestation:prest,tel:document.getElementById('tel-rdv').value,
+    msg:document.getElementById('msg-rdv').value,createdAt:new Date().toISOString()};
+  allRDV.push(rdv); sv('rdv',allRDV);
+  sendEmail(rdv);
+  selDate=null; selSlot=null;
+  document.getElementById('rdv-form').style.display='none';
+  ['prestation','tel-rdv','msg-rdv'].forEach(id=>{ const el=document.getElementById(id); el.value=''; });
+  document.getElementById('slots-grid').innerHTML='<p style="grid-column:1/-1;color:var(--texte-doux);font-size:0.85rem;">← Sélectionnez une date</p>';
+  document.getElementById('slots-title').textContent='Choisissez un jour';
+  renderCal(); renderMesRDV();
+  showToast('Rendez-vous confirmé ! Un email vous a été envoyé 💌','rose');
+}
+function sendEmail(rdv) {
+  const ej=CFG.emailjs; if(!ej.key||!ej.svc||!ej.tpl) return;
+  const [y,m,d]=rdv.date.split('-');
+  const M=['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
+  try {
+    emailjs.init(ej.key);
+    emailjs.send(ej.svc,ej.tpl,{to_name:rdv.userName,to_email:rdv.userEmail,
+      date:`${d} ${M[parseInt(m)-1]} ${y}`,heure:rdv.heure,prestation:rdv.prestation,
+      message:rdv.msg||'Aucun message',owner_email:ej.owner});
+  } catch(e){console.error('EmailJS:',e);}
+}
+function renderMesRDV() {
+  if(!currentUser) return;
+  const c=document.getElementById('liste-rdv');
+  const mes=allRDV.filter(r=>r.userId===currentUser.id).sort((a,b)=>a.date.localeCompare(b.date));
+  if(!mes.length){c.innerHTML='<p style="color:var(--texte-doux);font-size:0.88rem;">Aucun rendez-vous pour le moment ✨</p>';return;}
+  const M=['janv','févr','mars','avr','mai','juin','juil','août','sept','oct','nov','déc'];
+  c.innerHTML=mes.map(r=>{
+    const [y,m,d]=r.date.split('-'),past=r.date<dk(today);
+    return `<div class="rdv-card" style="${past?'opacity:0.5':''}">
+      <div class="rdv-dot"></div>
+      <div class="rdv-info"><strong>${d} ${M[parseInt(m)-1]} ${y} à ${r.heure}</strong><span>${r.prestation}</span></div>
+      ${!past?`<button class="rdv-annuler" onclick="cancelRDV(${r.id})">Annuler</button>`:''}
+    </div>`;
+  }).join('');
+}
+function cancelRDV(id) {
+  if(!confirm('Annuler ce rendez-vous ?')) return;
+  allRDV=allRDV.filter(r=>r.id!==id); sv('rdv',allRDV);
+  renderMesRDV(); renderCal(); showToast('Rendez-vous annulé');
+}
+
+// ══════════════════════════════════════════════
+// ADMIN — LOAD
+// ══════════════════════════════════════════════
+function loadAdminSection(sid) {
+  if(sid==='accueil-cfg') {
+    document.getElementById('a-subtitle').value=CFG.hero.subtitle;
+    document.getElementById('a-title').value=CFG.hero.title;
+    document.getElementById('a-desc').value=CFG.hero.desc;
+    document.getElementById('a-footer').value=CFG.hero.footer;
+  }
+  else if(sid==='services-cfg') renderSvcAdmin();
+  else if(sid==='horaires-cfg') renderHorAdmin();
+  else if(sid==='creneaux-cfg') renderCrenAdmin();
+  else if(sid==='info-cfg') {
+    document.getElementById('i-loc-inp').value=CFG.info.loc;
+    document.getElementById('i-insta').value=CFG.info.insta;
+    document.getElementById('i-email-aff').value=CFG.info.emailAff;
+    document.getElementById('i-contact-extra').value=CFG.info.contactExtra;
+    document.getElementById('i-prest-inp').value=CFG.info.prestList;
+  }
+  else if(sid==='rdv-all') renderAllRDV();
+  else if(sid==='admins-cfg') renderAdminList();
+  else if(sid==='email-cfg') {
+    document.getElementById('ej-key').value=CFG.emailjs.key;
+    document.getElementById('ej-svc').value=CFG.emailjs.svc;
+    document.getElementById('ej-tpl').value=CFG.emailjs.tpl;
+    document.getElementById('ej-owner').value=CFG.emailjs.owner;
+    document.getElementById('g-cid').value=CFG.gcid;
+  }
+}
+
+function renderSvcAdmin() {
+  document.getElementById('svc-admin-list').innerHTML=CFG.services.map((s,i)=>`
+    <div class="svc-row">
+      <input class="svc-icon-inp" type="text" value="${s.icon}" oninput="CFG.services[${i}].icon=this.value" title="Emoji icône">
+      <input type="text" value="${s.nom}" oninput="CFG.services[${i}].nom=this.value" placeholder="Nom prestation">
+      <input type="text" value="${s.desc}" oninput="CFG.services[${i}].desc=this.value" placeholder="Description">
+      <input type="text" value="${s.prix}" oninput="CFG.services[${i}].prix=this.value" placeholder="Prix €" style="width:80px">
+      <button class="btn-del" onclick="delSvc(${i})">✕</button>
+    </div>`).join('');
+}
+function addSvc() { CFG.services.push({id:Date.now(),icon:'💎',nom:'Nouvelle prestation',desc:'Description',prix:'0'}); renderSvcAdmin(); }
+function delSvc(i) { if(CFG.services.length<=1){showToast('Minimum 1 prestation');return;} CFG.services.splice(i,1); renderSvcAdmin(); }
+
+function renderHorAdmin() {
+  document.getElementById('hor-admin').innerHTML=CFG.horaires.map((h,i)=>`
+    <div class="h-row">
+      <label>${h.jour}</label>
+      <input type="time" value="${h.ouv}" ${h.ferme?'disabled':''} oninput="CFG.horaires[${i}].ouv=this.value">
+      <input type="time" value="${h.fer}" ${h.ferme?'disabled':''} oninput="CFG.horaires[${i}].fer=this.value">
+      <div class="ferme-check">
+        <input type="checkbox" id="fc${i}" ${h.ferme?'checked':''} onchange="toggleFerme(${i},this.checked)">
+        <label for="fc${i}">Fermé</label>
+      </div>
+    </div>`).join('');
+}
+function toggleFerme(i,v){ CFG.horaires[i].ferme=v; renderHorAdmin(); }
+
+function renderCrenAdmin() {
+  document.getElementById('cren-wrap').innerHTML=CFG.creneaux.map((c,i)=>`
+    <div class="ctag"><span>${c}</span><button onclick="delCren(${i})">✕</button></div>`).join('');
+}
+function addCren() {
+  const v=document.getElementById('new-cren').value;
+  if(!v){showToast('Entrez une heure');return;}
+  if(CFG.creneaux.includes(v)){showToast('Créneau déjà existant');return;}
+  CFG.creneaux.push(v); CFG.creneaux.sort(); renderCrenAdmin();
+}
+function delCren(i){ CFG.creneaux.splice(i,1); renderCrenAdmin(); }
+
+function renderAllRDV() {
+  const w=document.getElementById('all-rdv-wrap');
+  const sorted=[...allRDV].sort((a,b)=>b.date.localeCompare(a.date));
+  if(!sorted.length){w.innerHTML='<p style="color:var(--texte-doux);font-size:0.88rem;padding:1rem 0">Aucun rendez-vous encore.</p>';return;}
+  const M=['janv','févr','mars','avr','mai','juin','juil','août','sept','oct','nov','déc'];
+  w.innerHTML=`<table class="rdv-table"><thead><tr><th>Date</th><th>Heure</th><th>Client</th><th>Prestation</th><th>Message</th><th>Statut</th><th></th></tr></thead><tbody>
+  ${sorted.map(r=>{
+    const [y,m,d]=r.date.split('-'),past=r.date<dk(today);
+    return `<tr>
+      <td>${d} ${M[parseInt(m)-1]} ${y}</td>
+      <td><strong>${r.heure}</strong></td>
+      <td><strong>${r.userName}</strong><br><span style="font-size:0.72rem;color:var(--texte-doux)">${r.userEmail}</span></td>
+      <td>${r.prestation}</td>
+      <td style="max-width:140px;font-size:0.78rem;color:var(--texte-doux)">${r.msg||'—'}</td>
+      <td><span class="${past?'badge-past':'badge-up'}">${past?'Passé':'À venir'}</span></td>
+      <td><button class="btn-del-rdv" onclick="adminDelRDV(${r.id})">Supprimer</button></td>
+    </tr>`;
+  }).join('')}</tbody></table>`;
+}
+function adminDelRDV(id){
+  if(!confirm('Supprimer ce rendez-vous ?')) return;
+  allRDV=allRDV.filter(r=>r.id!==id); sv('rdv',allRDV); renderAllRDV(); showToast('RDV supprimé','ok');
+}
+
+function renderAdminList() {
+  document.getElementById('admin-list').innerHTML=CFG.admins.map((e,i)=>`
+    <div class="admin-item">
+      <span>👑 ${e}</span>
+      ${CFG.admins.length>1?`<button onclick="removeAdmin(${i})">✕</button>`:'<span style="font-size:0.72rem;color:var(--texte-doux)">Propriétaire</span>'}
+    </div>`).join('');
+}
+function addAdmin(){
+  const v=document.getElementById('new-admin-inp').value.trim();
+  if(!v.includes('@')){showToast('Email invalide');return;}
+  if(CFG.admins.includes(v)){showToast('Déjà admin');return;}
+  CFG.admins.push(v); sv('admins',CFG.admins); renderAdminList();
+  document.getElementById('new-admin-inp').value='';
+  showToast(v+' ajouté comme admin ✓','ok');
+}
+function removeAdmin(i){ CFG.admins.splice(i,1); sv('admins',CFG.admins); renderAdminList(); }
+
+// ══════════════════════════════════════════════
+// ADMIN — SAVE
+// ══════════════════════════════════════════════
+function saveAccueil(){
+  CFG.hero={subtitle:document.getElementById('a-subtitle').value,title:document.getElementById('a-title').value,
+    desc:document.getElementById('a-desc').value,footer:document.getElementById('a-footer').value};
+  sv('hero',CFG.hero); renderAccueil(); showToast('Page d\'accueil sauvegardée ✓','ok');
+}
+function saveSvc(){ sv('services',CFG.services); renderAccueil(); showToast('Prestations sauvegardées ✓','ok'); }
+function saveHoraires(){ sv('horaires',CFG.horaires); renderInfo(); showToast('Horaires sauvegardés ✓','ok'); }
+function saveCren(){ sv('creneaux',CFG.creneaux); showToast('Créneaux sauvegardés ✓','ok'); }
+function saveInfo(){
+  CFG.info={loc:document.getElementById('i-loc-inp').value,insta:document.getElementById('i-insta').value,
+    emailAff:document.getElementById('i-email-aff').value,contactExtra:document.getElementById('i-contact-extra').value,
+    prestList:document.getElementById('i-prest-inp').value};
+  sv('info',CFG.info); renderInfo(); showToast('Infos sauvegardées ✓','ok');
+}
+function saveEmail(){
+  CFG.emailjs={key:document.getElementById('ej-key').value,svc:document.getElementById('ej-svc').value,
+    tpl:document.getElementById('ej-tpl').value,owner:document.getElementById('ej-owner').value};
+  sv('emailjs',CFG.emailjs); showToast('Config email sauvegardée ✓','ok');
+}
+function saveGCID(){ CFG.gcid=document.getElementById('g-cid').value; sv('gcid',CFG.gcid); showToast('Client ID sauvegardé — rechargez la page ✓','ok'); }
+
+// ══════════════════════════════════════════════
+// TOAST
+// ══════════════════════════════════════════════
+function showToast(msg,type){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.className='toast show'+(type?' '+type:'');
+  clearTimeout(t._t); t._t=setTimeout(()=>t.classList.remove('show'),3500);
+}
+
+// ══ INIT ══
+renderAccueil(); renderInfo(); renderCal();
+</script>
+</body>
+</html>
