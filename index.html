@@ -741,15 +741,22 @@ function confirmerRDV() {
   showToast('Rendez-vous confirmé ! Votre Rendez Vous a etait enregistrer 💌','rose');
 }
 function sendEmail(rdv) {
-  const ej=CFG.emailjs; if(!ej.key||!ej.svc||!ej.tpl) return;
-  const [y,m,d]=rdv.date.split('-');
-  const M=['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
+  const ej = CFG.emailjs; if(!ej.key||!ej.svc||!ej.tpl) return;
+  const [y,m,d] = rdv.date.split('-');
+  const M = ['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
+  
   try {
     emailjs.init(ej.key);
-    emailjs.send(ej.svc,ej.tpl,{to_name:rdv.userName,to_email:rdv.userEmail,
-      date:`${d} ${M[parseInt(m)-1]} ${y}`,heure:rdv.heure,prestation:rdv.prestation,
-      message:rdv.msg||'Aucun message',owner_email:ej.owner});
-  } catch(e){console.error('EmailJS:',e);}
+    emailjs.send(ej.svc, ej.tpl, {
+      user_name: rdv.userName,   // J'ai remplacé to_name par user_name
+      user_email: rdv.userEmail, // J'ai remplacé to_email par user_email
+      date: `${d} ${M[parseInt(m)-1]} ${y}`,
+      time: rdv.heure,           // J'ai remplacé heure par time
+      prestation: rdv.prestation,
+      message: rdv.msg || 'Aucun message',
+      owner_email: ej.owner
+    });
+  } catch(e){ console.error('EmailJS:', e); }
 }
 function renderMesRDV() {
   if(!currentUser) return;
