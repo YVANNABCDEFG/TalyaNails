@@ -738,7 +738,7 @@ function confirmerRDV() {
   document.getElementById('slots-grid').innerHTML='<p style="grid-column:1/-1;color:var(--texte-doux);font-size:0.85rem;">← Sélectionnez une date</p>';
   document.getElementById('slots-title').textContent='Choisissez un jour';
   renderCal(); renderMesRDV();
-  showToast('Rendez-vous confirmé ! Un email vous a été envoyé 💌','rose');
+  showToast('Rendez-vous confirmé ! Votre Rendez Vous a etait enregistrer 💌','rose');
 }
 function sendEmail(rdv) {
   const ej=CFG.emailjs; if(!ej.key||!ej.svc||!ej.tpl) return;
