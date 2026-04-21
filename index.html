@@ -747,13 +747,16 @@ function sendEmail(rdv) {
   
   try {
     emailjs.init(ej.key);
-    emailjs.send(ej.svc, ej.tpl, {
-      user_name: rdv.userName,   // J'ai remplacé to_name par user_name
-      user_email: rdv.userEmail, // J'ai remplacé to_email par user_email
-      date: `${d} ${M[parseInt(m)-1]} ${y}`,
-      time: rdv.heure,           // J'ai remplacé heure par time
-      prestation: rdv.prestation,
-      message: rdv.msg || 'Aucun message',
+    // Modifie cette partie dans ton emailjs.send
+  emailjs.send(ej.svc, ej.tpl, {
+  user_name: rdv.userName,
+  user_email: rdv.userEmail,
+  date: `${d} ${M[parseInt(m)-1]} ${y}`,
+  time: rdv.heure,   // Pour EmailJS si tu utilises {{time}}
+  heure: rdv.heure,  // Pour EmailJS si tu utilises {{heure}}
+  prestation: rdv.prestation,
+  message: rdv.msg || 'Aucun message'
+});
       owner_email: ej.owner
     });
   } catch(e){ console.error('EmailJS:', e); }
